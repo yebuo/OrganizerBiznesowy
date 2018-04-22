@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "970204150392",
+    "firebase_url": "https://organizer-biznesowy.firebaseio.com",
+    "project_id": "organizer-biznesowy",
+    "storage_bucket": "organizer-biznesowy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970204150392:android:975086178a39a10a",
+        "android_client_info": {
+          "package_name": "com.example.yebuo.organizerbiznesowy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970204150392-6udua6lnagiooh3pn5n9lg6bhgki1buc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.yebuo.organizerbiznesowy",
+            "certificate_hash": "b6a79784081aa01f2358e309b57f866d57c2f222"
+          }
+        },
+        {
+          "client_id": "970204150392-98s04t1mvo5i34a8inqgdl6tpp01nbhp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCMoiDx8x6WFX_kwkrqJ7ES9F91NhUMyc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970204150392-98s04t1mvo5i34a8inqgdl6tpp01nbhp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
