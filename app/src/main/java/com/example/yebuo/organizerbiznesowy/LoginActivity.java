@@ -15,12 +15,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
     GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9876;
     private SignInButton mSignInButton;
+
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference ref = database.getReference();
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
             // Signed in successfully, show authenticated UI.
 
+            ref.child("osoby").child(account.getId()).child("dane").setValue(new User(account.getDisplayName(),account.getFamilyName(),account.getEmail(),"123"));
             updateUI(account);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } catch (ApiException e) {

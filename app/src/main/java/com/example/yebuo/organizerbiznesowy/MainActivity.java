@@ -14,9 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -24,7 +26,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,6 +43,10 @@ public class MainActivity extends AppCompatActivity
     GoogleSignInAccount account;
     GoogleSignInClient mGoogleSignInClient;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference();
+    private ArrayAdapter<Notatka> adapter;
+
+    private List<Notatka> lNotatki;
 
 
     @Override
@@ -43,6 +56,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ListView listView = (ListView) findViewById(R.id.itemsListView);
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -64,6 +78,16 @@ public class MainActivity extends AppCompatActivity
         mNavigationView = findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
         updateUI(account);
+
+        lNotatki = new ArrayList<>();
+//        lNotatki.add(new Notatka("a","asd"));
+//        lNotatki.add(new Notatka("b","ads"));
+//        lNotatki.add(new Notatka("c","dsa"));
+//        lNotatki.add("a");
+//        lNotatki.add("b");
+//        lNotatki.add("c");
+        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lNotatki);
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -102,20 +126,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        int idx = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (idx == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (idx == R.id.nav_gallery) {
+            getData();
+        } else if (idx == R.id.nav_slideshow) {
+            loadNotatki();
+        } else if (idx == R.id.nav_manage) {
 
+        } else if (idx == R.id.nav_share) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (idx == R.id.nav_send) {
             signOut();
         }
 
@@ -147,5 +170,47 @@ public class MainActivity extends AppCompatActivity
 
     private void insertUser(GoogleSignInAccount acc){
         //FirebaseDatabase database
+    }
+
+    private void getData(){
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                User user = dataSnapshot.child("osoby").child("O1").child("dane").getValue(User.class);
+                TextView textView = findViewById(R.id.mainTextView);
+                textView.setText(user.getTelefon());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+
+            }
+        });
+    }
+
+    public void loadData(){
+
+    }
+
+    public void loadNotatki(){
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.child("osoby").child(account.getId()).child("zasoby").child("notatki").getChildren()) {
+                    Notatka exercise = snapshot.getValue(Notatka.class);
+
+                    lNotatki.add(exercise);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
