@@ -2,30 +2,52 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+
+        <item android:title="Moje">
+            <menu>
+                <item
+                    android:id="@+id/notatkiUser"
+                    android:icon="@drawable/ic_menu_note"
+                    android:title="Notatki" />
+                <item
+                    android:id="@+id/listyUser"
+                    android:icon="@drawable/ic_menu_list"
+                    android:title="Listy" />
+                <item
+                    android:id="@+id/plikiUser"
+                    android:icon="@drawable/ic_menu_file"
+                    android:title="Pliki" />
+            </menu>
+        </item>
+
+        <item android:title="Grupy">
+            <menu>
+                <item
+                    android:id="@+id/grupy"
+                    android:icon="@drawable/ic_menu_grup"
+                    android:title="Grupy" />
+                <item
+                    android:id="@+id/notatkiGrup"
+                    android:icon="@drawable/ic_menu_note"
+                    android:title="Notatki" />
+                <item
+                    android:id="@+id/listyGrup"
+                    android:icon="@drawable/ic_menu_list"
+                    android:title="Listy" />
+                <item
+                    android:id="@+id/plikiGrup"
+                    android:icon="@drawable/ic_menu_file"
+                    android:title="Pliki" /> />
+            </menu>
+        </item>
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Inne">
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:icon="@drawable/ic_menu_manage"
+                android:title="Ustawienia" />
             <item
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_send"

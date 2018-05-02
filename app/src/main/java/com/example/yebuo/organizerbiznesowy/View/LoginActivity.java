@@ -1,13 +1,12 @@
-package com.example.yebuo.organizerbiznesowy;
+package com.example.yebuo.organizerbiznesowy.View;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
+import com.example.yebuo.organizerbiznesowy.R;
+import com.example.yebuo.organizerbiznesowy.Model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -78,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
             ref.child("osoby").child(account.getId()).child("dane").setValue(new User(account.getDisplayName(),account.getFamilyName(),account.getEmail(),"123"));
             updateUI(account);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.

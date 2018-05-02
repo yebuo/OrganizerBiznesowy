@@ -1,4 +1,4 @@
-package com.example.yebuo.organizerbiznesowy;
+package com.example.yebuo.organizerbiznesowy.Model;
 
 /**
  * Created by Yebuo on 22.04.2018.

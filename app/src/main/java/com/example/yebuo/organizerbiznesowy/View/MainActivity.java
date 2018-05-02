@@ -1,7 +1,8 @@
-package com.example.yebuo.organizerbiznesowy;
+package com.example.yebuo.organizerbiznesowy.View;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,11 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.yebuo.organizerbiznesowy.Model.Resource;
+import com.example.yebuo.organizerbiznesowy.R;
+import com.example.yebuo.organizerbiznesowy.Model.User;
+import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -44,9 +48,10 @@ public class MainActivity extends AppCompatActivity
     GoogleSignInClient mGoogleSignInClient;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
-    private ArrayAdapter<Notatka> adapter;
 
-    private List<Notatka> lNotatki;
+    private List<Resource> lResources;
+    ListView listView;
+    private ArrayAdapter adapter;
 
 
     @Override
@@ -54,13 +59,13 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ListView listView = (ListView) findViewById(R.id.itemsListView);
+        listView = findViewById(R.id.itemsListView);
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +74,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -79,20 +84,20 @@ public class MainActivity extends AppCompatActivity
         mNavigationView.setNavigationItemSelectedListener(this);
         updateUI(account);
 
-        lNotatki = new ArrayList<>();
-//        lNotatki.add(new Notatka("a","asd"));
-//        lNotatki.add(new Notatka("b","ads"));
-//        lNotatki.add(new Notatka("c","dsa"));
-//        lNotatki.add("a");
-//        lNotatki.add("b");
-//        lNotatki.add("c");
-        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lNotatki);
-        listView.setAdapter(adapter);
+        lResources = new ArrayList<>();
+//
+//        lResources.add("a");
+//        lResources.add("b");
+//        lResources.add("c");
+//
+//
+//        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResources);
+//        listView.setAdapter(adapter);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -128,13 +133,15 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int idx = item.getItemId();
 
-        if (idx == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (idx == R.id.nav_gallery) {
-            getData();
-        } else if (idx == R.id.nav_slideshow) {
+        if (idx == R.id.notatkiUser) {
             loadNotatki();
-        } else if (idx == R.id.nav_manage) {
+
+
+        } else if (idx == R.id.listyUser) {
+            getData();
+        } else if (idx == R.id.plikiUser) {
+
+        } else if (idx == R.id.grupy) {
 
         } else if (idx == R.id.nav_share) {
 
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity
             signOut();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -200,11 +207,16 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.child("osoby").child(account.getId()).child("zasoby").child("notatki").getChildren()) {
-                    Notatka exercise = snapshot.getValue(Notatka.class);
+                    Resource exercise = snapshot.getValue(Resource.class);
 
-                    lNotatki.add(exercise);
+                    lResources.add(exercise);
 
                 }
+                Intent intent = new Intent(MainActivity.this, NotatkiActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("notatki", (ArrayList<? extends Parcelable>) lResources); //to debug change here list of exercises
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
 
             @Override
