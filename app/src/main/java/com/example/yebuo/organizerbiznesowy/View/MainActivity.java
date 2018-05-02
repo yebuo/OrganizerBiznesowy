@@ -1,11 +1,14 @@
 package com.example.yebuo.organizerbiznesowy.View;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.Editable;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -65,14 +69,37 @@ public class MainActivity extends AppCompatActivity
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        alert = new AlertDialog.Builder(this);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//                final EditText edittext = new EditText(MainActivity.this);
+//                alert.setMessage("Enter Your Message");
+//                alert.setTitle("Enter Your Title");
+//
+//                alert.setView(edittext);
+//
+//                alert.setPositiveButton("Yes Option", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int whichButton) {
+//                        //What ever you want to do with the value
+//                        //Editable YouEditTextValue = edittext.getText();
+//                        //OR
+//                        //String YouEditTextValue = edittext.getText().toString();
+//                    }
+//                });
+//
+//                alert.setNegativeButton("No Option", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int whichButton) {
+//                        // what ever you want to do with No option.
+//                    }
+//                });
+//
+//                alert.show();
+//            }
+//        });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -206,6 +233,7 @@ public class MainActivity extends AppCompatActivity
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                lResources = new ArrayList<>();
                 for(DataSnapshot snapshot : dataSnapshot.child("osoby").child(account.getId()).child("zasoby").child("notatki").getChildren()) {
                     Resource exercise = snapshot.getValue(Resource.class);
 
