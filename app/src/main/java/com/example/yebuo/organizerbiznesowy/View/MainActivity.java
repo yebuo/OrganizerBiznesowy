@@ -162,15 +162,19 @@ public class MainActivity extends AppCompatActivity
 
         if (idx == R.id.notatkiUser) {
             loadNotatki();
-
-
         } else if (idx == R.id.listyUser) {
             getData();
         } else if (idx == R.id.plikiUser) {
-
+            loadFiles();
         } else if (idx == R.id.grupy) {
 
-        } else if (idx == R.id.nav_share) {
+        } else if (idx == R.id.notatkiGrup) {
+
+        } else if (idx == R.id.listyGrup) {
+
+        } else if (idx == R.id.plikiGrup) {
+
+        }else if (idx == R.id.nav_share) {
 
         } else if (idx == R.id.nav_send) {
             signOut();
@@ -202,10 +206,6 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void insertUser(GoogleSignInAccount acc){
-        //FirebaseDatabase database
-    }
-
     private void getData(){
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -225,10 +225,6 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    public void loadData(){
-
-    }
-
     public void loadNotatki(){
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -243,6 +239,31 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(MainActivity.this, NotatkiActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("notatki", (ArrayList<? extends Parcelable>) lResources); //to debug change here list of exercises
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void loadFiles(){
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                lResources = new ArrayList<>();
+                for(DataSnapshot snapshot : dataSnapshot.child("osoby").child(account.getId()).child("zasoby").child("pliki").getChildren()) {
+                    Resource exercise = snapshot.getValue(Resource.class);
+
+                    lResources.add(exercise);
+
+                }
+                Intent intent = new Intent(MainActivity.this, PlikiActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("pliki", (ArrayList<? extends Parcelable>) lResources); //to debug change here list of exercises
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
