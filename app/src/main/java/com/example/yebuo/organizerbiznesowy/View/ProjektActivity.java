@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -137,6 +138,8 @@ public class ProjektActivity extends AppCompatActivity {
             adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lProjektyNames);
             listView.setAdapter(adapter);
         }
+
+
     }
 
     @Override

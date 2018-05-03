@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -136,6 +137,20 @@ public class PlikiActivity extends AppCompatActivity {
             adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
             listView.setAdapter(adapter);
         }
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                int xxx = 0;
+                //Uri tempStor = sRef.child("files").child(account.getId()).child(adapterView.getItemAtPosition(i).toString()).getDownloadUrl();
+//                tempStor.getFile() .addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                    @Override
+//                    public void onSuccess(Uri uri) {
+//
+//                    }
+//                });
+            }
+        });
     }
 
     @Override
