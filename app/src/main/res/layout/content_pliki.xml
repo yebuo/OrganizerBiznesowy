@@ -25,6 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/mainTextView"
         android:layout_centerHorizontal="true"
-        android:id="@+id/buttonSearchFile" />
+        android:id="@+id/buttonSearchFile2" />
 
 </RelativeLayout>

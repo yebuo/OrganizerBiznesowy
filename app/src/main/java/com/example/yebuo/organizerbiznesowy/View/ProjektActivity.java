@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.yebuo.organizerbiznesowy.Model.Projekt;
 import com.example.yebuo.organizerbiznesowy.Model.Resource;
 import com.example.yebuo.organizerbiznesowy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -44,7 +45,7 @@ import java.util.List;
  * Created by Yebuo on 02.05.2018.
  */
 
-public class PlikiActivity extends AppCompatActivity {
+public class ProjektActivity extends AppCompatActivity {
 
     private ArrayAdapter adapter;
     AlertDialog.Builder alert;
@@ -54,8 +55,8 @@ public class PlikiActivity extends AppCompatActivity {
     StorageReference sRef = storage.getReference();
     GoogleSignInAccount account;
 
-    private List<Resource> lResources;
-    private List<String> lResourcesNames;
+    private List<Projekt> lProjekty;
+    private List<String> lProjektyNames;
     ListView listView;
 
     public static final int REQUEST_CODE = 1234;
@@ -66,13 +67,13 @@ public class PlikiActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pliki);
+        setContentView(R.layout.activity_projekt);
         account = GoogleSignIn.getLastSignedInAccount(this);
 
-        lResources = new ArrayList<>();
-        lResourcesNames = new ArrayList<>();
+        lProjekty = new ArrayList<>();
+        lProjektyNames = new ArrayList<>();
         listView = findViewById(R.id.itemsListView);
-        lResources = getIntent().getExtras().getParcelableArrayList("pliki");
+        lProjekty = getIntent().getExtras().getParcelableArrayList("projekty");
 
 //        Button buttonFileExplorer = findViewById(R.id.buttonSearchFile);
 //        buttonFileExplorer.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +90,7 @@ public class PlikiActivity extends AppCompatActivity {
             public void onClick(final View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                LayoutInflater inflater = PlikiActivity.this.getLayoutInflater();
+                LayoutInflater inflater = ProjektActivity.this.getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.custom_dialog_pliki, null);
                 alert.setView(dialogView);
                 final EditText editTextNazwa = dialogView.findViewById(R.id.editNazwa);
@@ -129,11 +130,11 @@ public class PlikiActivity extends AppCompatActivity {
 //        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
 //        listView.setAdapter(adapter);
 
-        if (!(lResources != null && lResources.isEmpty())) {
-            for (int i = 0; i <lResources.size(); i++){
-                lResourcesNames.add(lResources.get(i).getNazwa());
+        if (!(lProjekty != null && lProjekty.isEmpty())) {
+            for (int i = 0; i <lProjekty.size(); i++){
+                lProjektyNames.add(lProjekty.get(i).getDaneTytul());
             }
-            adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
+            adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lProjektyNames);
             listView.setAdapter(adapter);
         }
     }

@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.yebuo.organizerbiznesowy.Model.Projekt;
 import com.example.yebuo.organizerbiznesowy.Model.Resource;
 import com.example.yebuo.organizerbiznesowy.R;
 import com.example.yebuo.organizerbiznesowy.Model.User;
@@ -41,7 +42,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     DatabaseReference myRef = database.getReference();
 
     private List<Resource> lResources;
+    private List<Projekt> lProjekt;
     ListView listView;
     private ArrayAdapter adapter;
 
@@ -167,7 +171,7 @@ public class MainActivity extends AppCompatActivity
         } else if (idx == R.id.plikiUser) {
             loadFiles();
         } else if (idx == R.id.grupy) {
-
+            loadProjekt();
         } else if (idx == R.id.notatkiGrup) {
 
         } else if (idx == R.id.listyGrup) {
@@ -264,6 +268,37 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(MainActivity.this, PlikiActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("pliki", (ArrayList<? extends Parcelable>) lResources); //to debug change here list of exercises
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void loadProjekt(){
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                lProjekt = new ArrayList<>();
+                for(DataSnapshot snapshot : dataSnapshot.child("projekty").getChildren()) {
+                    for(DataSnapshot s : snapshot.child("osoby").getChildren()){
+                        if (Objects.equals(s.getKey(), account.getId())){
+                            Projekt projekt = new Projekt();
+                            projekt.setDaneTermRozp(snapshot.child("dane").child("termrozp").getValue(String.class));
+                            projekt.setDaneTermZak(snapshot.child("dane").child("termzak").getValue(String.class));
+                            projekt.setDaneTytul(snapshot.child("dane").child("tytul").getValue(String.class));
+                            lProjekt.add(projekt);
+                        }
+                    }
+
+                }
+                Intent intent = new Intent(MainActivity.this, ProjektActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("projekty", (ArrayList<? extends Parcelable>) lProjekt); //to debug change here list of exercises
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
