@@ -1,6 +1,7 @@
 package com.example.yebuo.organizerbiznesowy.View;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,24 +9,33 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.yebuo.organizerbiznesowy.Model.Resource;
 import com.example.yebuo.organizerbiznesowy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +49,9 @@ public class PlikiActivity extends AppCompatActivity {
     private ArrayAdapter adapter;
     AlertDialog.Builder alert;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference ref = database.getReference();
+    final FirebaseStorage storage = FirebaseStorage.getInstance();
+    DatabaseReference dRef = database.getReference();
+    StorageReference sRef = storage.getReference();
     GoogleSignInAccount account;
 
     private List<Resource> lResources;
@@ -47,7 +59,7 @@ public class PlikiActivity extends AppCompatActivity {
     ListView listView;
 
     public static final int REQUEST_CODE = 1234;
-    private Uri imgUri;
+    private Uri uri;
 
 
     @Override
@@ -109,13 +121,13 @@ public class PlikiActivity extends AppCompatActivity {
 //        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
 //        listView.setAdapter(adapter);
 
-        if (!(lResources != null && lResources.isEmpty())) {
-            for (int i = 0; i <lResources.size(); i++){
-                lResourcesNames.add(lResources.get(i).getNazwa());
-            }
-            adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
-            listView.setAdapter(adapter);
-        }
+//        if (!(lResources != null && lResources.isEmpty())) {
+//            for (int i = 0; i <lResources.size(); i++){
+//                lResourcesNames.add(lResources.get(i).getNazwa());
+//            }
+//            adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
+//            listView.setAdapter(adapter);
+//        }
     }
 
     @Override
@@ -137,10 +149,10 @@ public class PlikiActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null && data.getData() != null){
-            imgUri = data.getData();
+            uri = data.getData();
             TextView textView = findViewById(R.id.mainTextView);
-            textView.setText(getFileName(imgUri));
-
+            textView.setText(getFileName(uri));
+            uploadFile(this.getCurrentFocus());
         }
     }
 
@@ -164,5 +176,37 @@ public class PlikiActivity extends AppCompatActivity {
             }
         }
         return result;
+    }
+
+    public String getFileExt(Uri uri){
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
+    public void uploadFile(View v){
+        if (uri != null){
+            StorageReference sRef = this.sRef.child("files").child(account.getId()).child(getFileName(uri));
+            sRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(getApplicationContext(), "Wysłano", Toast.LENGTH_SHORT).show();
+                    dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").push().setValue(new Resource(getFileName(uri), taskSnapshot.getDownloadUrl().toString()));
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    Toast.makeText(getApplicationContext(), "Niepowodzenie", Toast.LENGTH_SHORT).show();
+                }
+            })
+            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                }
+            });
+        }
     }
 }
