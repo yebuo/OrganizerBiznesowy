@@ -5,4 +5,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <string name="menu_add_user">Dodaj</string>
+    <string name="menu_delete_user">Usuń</string>
+    <string name="menu_edit_projekt">Edytuj</string>
 </resources>

@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class Projekt implements Parcelable {
 
+    String uid;
     String daneTytul;
     String daneTermRozp;
     String daneTermZak;
@@ -24,11 +25,12 @@ public class Projekt implements Parcelable {
     }
 
     protected Projekt(Parcel in) {
+        uid = in.readString();
         daneTytul = in.readString();
         daneTermRozp = in.readString();
         daneTermZak = in.readString();
-        notatki = in.createTypedArrayList(Resource.CREATOR);
-        pliki = in.createTypedArrayList(Resource.CREATOR);
+//        notatki = in.createTypedArrayList(Resource.CREATOR);
+//        pliki = in.createTypedArrayList(Resource.CREATOR);
     }
 
     public static final Creator<Projekt> CREATOR = new Creator<Projekt>() {
@@ -104,11 +106,21 @@ public class Projekt implements Parcelable {
         return 0;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(uid);
         parcel.writeString(daneTytul);
         parcel.writeString(daneTermRozp);
         parcel.writeString(daneTermZak);
+
         Map<User, String> osoby;
         List<Zadanie> zadania;
         List<Resource> notatki;

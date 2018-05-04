@@ -291,6 +291,7 @@ public class MainActivity extends AppCompatActivity
                             projekt.setDaneTermRozp(snapshot.child("dane").child("termrozp").getValue(String.class));
                             projekt.setDaneTermZak(snapshot.child("dane").child("termzak").getValue(String.class));
                             projekt.setDaneTytul(snapshot.child("dane").child("tytul").getValue(String.class));
+                            projekt.setUid(snapshot.getKey());
                             lProjekt.add(projekt);
                         }
                     }

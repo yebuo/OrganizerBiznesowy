@@ -9,12 +9,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -27,19 +31,24 @@ import android.widget.Toast;
 
 import com.example.yebuo.organizerbiznesowy.Model.Projekt;
 import com.example.yebuo.organizerbiznesowy.Model.Resource;
+import com.example.yebuo.organizerbiznesowy.Model.User;
 import com.example.yebuo.organizerbiznesowy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,7 +72,74 @@ public class ProjektActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 1234;
     private Uri uri;
     TextView filenameTextView;
+    EditText editTextNazwa;
+    EditText editTextTermin;
 
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if(v.getId() == R.id.itemsListView){
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_list, menu);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(final MenuItem item) {
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()){
+            case R.id.addUser:
+
+                finish();
+                return true;
+            case R.id.editProjekt:
+                LayoutInflater inflater = ProjektActivity.this.getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.custom_dialog_projekt, null);
+                alert.setView(dialogView);
+                editTextNazwa = dialogView.findViewById(R.id.editNazwa);
+                editTextTermin = dialogView.findViewById(R.id.editTermin);
+                dRef.child("projekty").child(lProjekty.get(info.position).getUid()).child("dane").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        editTextNazwa.setText(dataSnapshot.child("tytul").getValue().toString());
+                        editTextTermin.setText(dataSnapshot.child("termzak").getValue().toString());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                alert.setMessage("");
+                alert.setTitle("Edytuj projekt");
+
+
+                alert.setPositiveButton("Anuluj", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+
+                alert.setNegativeButton("Zapisz", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+//                        String key = String.valueOf(dRef.child("projekty").child(lProjekty.get(listView.getSelectedItemPosition()).getUid()));
+                        String key = String.valueOf(dRef.child("projekty").child(lProjekty.get(info.position).getUid()).getKey());
+                        DatabaseReference tempRef = dRef.child("projekty").child(key).child("dane");
+                        tempRef.child("tytul").setValue(editTextNazwa.getText().toString());
+                        tempRef.child("termzak").setValue(editTextTermin.getText().toString());
+                        finish();
+                    }
+                });
+
+                alert.show();
+                return true;
+            case R.id.deleteUser:
+
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,20 +168,13 @@ public class ProjektActivity extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 LayoutInflater inflater = ProjektActivity.this.getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.custom_dialog_pliki, null);
+                final View dialogView = inflater.inflate(R.layout.custom_dialog_projekt, null);
                 alert.setView(dialogView);
                 final EditText editTextNazwa = dialogView.findViewById(R.id.editNazwa);
-                final EditText editTextTresc = dialogView.findViewById(R.id.editTresc);
+                final EditText editTextTermin = dialogView.findViewById(R.id.editTermin);
                 alert.setMessage("");
-                alert.setTitle("Dodaj plik");
-                Button buttonFileExplorer = dialogView.findViewById(R.id.buttonSearchFile);
-                filenameTextView = dialogView.findViewById(R.id.filenameTextView);
-                buttonFileExplorer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        fileView(view);
-                    }
-                });
+                alert.setTitle("Nowy projekt");
+
 
                 alert.setPositiveButton("Anuluj", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -114,22 +183,19 @@ public class ProjektActivity extends AppCompatActivity {
 
                 alert.setNegativeButton("Zapisz", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        uploadFile(view);
-                        //ref.child("osoby").child(account.getId()).child("zasoby").child("notatki").push().setValue(new Resource(editTextNazwa.getText().toString(), editTextTresc.getText().toString()));
-                        //finish();
+                        String key = dRef.child("projekty").push().getKey();
+                        DatabaseReference tempRef = dRef.child("projekty").child(key).child("dane");
+                        tempRef.child("tytul").setValue(editTextNazwa.getText().toString());
+                        tempRef.child("termzak").setValue(editTextTermin.getText().toString());
+                        tempRef.child("termrozp").setValue(new Date().toString());
+                        dRef.child("projekty").child(key).child("osoby").child(account.getId()).child("osoba").setValue(account.getId());
+                        finish();
                     }
                 });
 
                 alert.show();
             }
         });
-
-//        lResourcesNames.add("x");
-//        lResourcesNames.add("y");
-//        lResourcesNames.add("x");
-//
-//        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
-//        listView.setAdapter(adapter);
 
         if (!(lProjekty != null && lProjekty.isEmpty())) {
             for (int i = 0; i <lProjekty.size(); i++){
@@ -139,6 +205,7 @@ public class ProjektActivity extends AppCompatActivity {
             listView.setAdapter(adapter);
         }
 
+        registerForContextMenu(listView);
 
     }
 
