@@ -2,13 +2,17 @@ package com.example.yebuo.organizerbiznesowy.View;
 
 import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,11 +38,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +72,9 @@ public class PlikiActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 1234;
     private Uri uri;
     TextView filenameTextView;
+
+
+    File file = null;
 
 
     @Override
@@ -141,7 +154,28 @@ public class PlikiActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                int xxx = 0;
+                try {
+                    file = File.createTempFile("image"+ System.currentTimeMillis(), "jpg");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                sRef.child("files").child(account.getId()).child((String)adapterView.getItemAtPosition(i)).getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        ImageView img = findViewById(R.id.mainImageView);
+                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                        img.setImageBitmap(bitmap);
+                        FileOutputStream fileOutputStream;
+                        try {
+                            fileOutputStream = openFileOutput(file.getName(), Context.MODE_PRIVATE);
+                            fileOutputStream.write(("asd").getBytes());
+                            fileOutputStream.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                // getDownloadUrl().toString()
                 //Uri tempStor = sRef.child("files").child(account.getId()).child(adapterView.getItemAtPosition(i).toString()).getDownloadUrl();
 //                tempStor.getFile() .addOnSuccessListener(new OnSuccessListener<Uri>() {
 //                    @Override
