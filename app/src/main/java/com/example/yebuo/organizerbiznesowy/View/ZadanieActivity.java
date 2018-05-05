@@ -123,16 +123,20 @@ public class ZadanieActivity extends AppCompatActivity {
                 dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).removeValue();
                 return true;
             case R.id.zmienStan:
-                dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).child("stan").addValueEventListener(new ValueEventListener() {
+                dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).child("stan").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String stan =  dataSnapshot.getValue().toString();
-                        if (Objects.equals(stan, "0"))
-                            listView.getChildAt(info.position).setBackgroundColor(Color.RED);
-                        if (Objects.equals(stan, "1"))
-                            listView.getChildAt(info.position).setBackgroundColor(Color.YELLOW);
-                        if (Objects.equals(stan, "2"))
-                            listView.getChildAt(info.position).setBackgroundColor(Color.GREEN);
+                        if (Objects.equals(stan, "0")) {
+                            dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).child("stan").setValue(1);
+//                            listView.getChildAt(info.position).setBackgroundColor(Color.GREEN);
+                            finish();
+                        }
+                        else if (Objects.equals(stan, "1")) {
+                            dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).child("stan").setValue(0);
+//                            listView.getChildAt(info.position).setBackgroundColor(Color.RED);
+                            finish();
+                        }
                     }
 
                     @Override
@@ -199,7 +203,7 @@ public class ZadanieActivity extends AppCompatActivity {
                                 zadanie.setOsoba(osoba);
                                 zadanie.setOsobaEmail(editTextNazwa.getText().toString().toLowerCase());
                                 zadanie.setUid(key);
-                                zadanie.setStan(0);
+                                zadanie.setStan("0");
                                 zadanie.setTresc(editTextTresc.getText().toString());
                                 tempRef.setValue(zadanie);
                                 finish();
@@ -226,6 +230,8 @@ public class ZadanieActivity extends AppCompatActivity {
                     zadanie.setUid(snapshot.getKey());
                     zadanie.setTresc(snapshot.child("tresc").getValue().toString());
                     zadanie.setOsoba(snapshot.child("osoba").getValue().toString());
+                    zadanie.setOsobaEmail(snapshot.child("osobaEmail").getValue().toString());
+                    zadanie.setStan(snapshot.child("stan").getValue().toString());
                     lZadania.add(zadanie);
                 }
                 if (!(lZadania == null || lZadania.isEmpty())) {
@@ -261,6 +267,7 @@ public class ZadanieActivity extends AppCompatActivity {
                 editTextNazwa.setVisibility(View.INVISIBLE);
                 editTextTresc.setVisibility(View.INVISIBLE);
                 textViewTresc.setMovementMethod(new ScrollingMovementMethod());
+                koloruj();
                 dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(i).getUid()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -291,12 +298,12 @@ public class ZadanieActivity extends AppCompatActivity {
 
     public void koloruj(){
         for (listViewCounter = 0; listViewCounter < listView.getCount(); listViewCounter++){
-            if (lZadania.get(listViewCounter).getStan() == 0)
+            if (lZadania.get(listViewCounter).getStan() == "0")
                 listView.getChildAt(listViewCounter).setBackgroundColor(Color.RED);
-            if (lZadania.get(listViewCounter).getStan() == 1)
-                listView.getChildAt(listViewCounter).setBackgroundColor(Color.YELLOW);
-            if (lZadania.get(listViewCounter).getStan() == 2)
-                listView.getChildAt(listViewCounter).setBackgroundColor(Color.RED);
+            if (lZadania.get(listViewCounter).getStan() == "1")
+                listView.getChildAt(listViewCounter).setBackgroundColor(Color.GREEN);
+//            if (lZadania.get(listViewCounter).getStan() == "2")
+//                listView.getChildAt(listViewCounter).setBackgroundColor(Color.GREEN);
         }
         listViewCounter = 0;
     }

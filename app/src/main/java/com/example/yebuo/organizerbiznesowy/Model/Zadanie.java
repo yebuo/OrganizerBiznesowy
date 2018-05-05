@@ -14,7 +14,7 @@ public class Zadanie implements Parcelable{
     String tresc;
     String uid;
     String osobaEmail;
-    int stan;
+    String stan;
     List<Zadanie> podzadanie;
 
     public Zadanie(){
@@ -34,7 +34,7 @@ public class Zadanie implements Parcelable{
         tresc = in.readString();
         uid = in.readString();
         osobaEmail = in.readString();
-        stan = in.readInt();
+        stan = in.readString();
 
 //        podzadanie = in.createTypedArrayList(Zadanie.CREATOR);
     }
@@ -88,11 +88,11 @@ public class Zadanie implements Parcelable{
         return 0;
     }
 
-    public int getStan() {
+    public String getStan() {
         return stan;
     }
 
-    public void setStan(int stan) {
+    public void setStan(String stan) {
         this.stan = stan;
     }
 
@@ -102,7 +102,7 @@ public class Zadanie implements Parcelable{
         parcel.writeString(tresc);
         parcel.writeString(uid);
         parcel.writeString(osobaEmail);
-        parcel.writeInt(stan);
+        parcel.writeString(stan);
         parcel.writeTypedList(podzadanie);
     }
 }
