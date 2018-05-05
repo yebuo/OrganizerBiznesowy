@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:id="@+id/editZadanie"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/menu_edit_projekt" />
+
+    <item android:id="@+id/deleteZadanie"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/menu_delete_user" />
+
+    <item android:id="@+id/zmienStan"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/menu_zmien_stan" />
+
+
+</menu>

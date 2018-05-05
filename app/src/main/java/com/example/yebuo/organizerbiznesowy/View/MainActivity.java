@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 
 import com.example.yebuo.organizerbiznesowy.Model.Projekt;
 import com.example.yebuo.organizerbiznesowy.Model.Resource;
+import com.example.yebuo.organizerbiznesowy.Model.Zadanie;
 import com.example.yebuo.organizerbiznesowy.R;
 import com.example.yebuo.organizerbiznesowy.Model.User;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
@@ -57,9 +60,14 @@ public class MainActivity extends AppCompatActivity
     DatabaseReference myRef = database.getReference();
 
     private List<Resource> lResources;
-    private List<Projekt> lProjekt;
     ListView listView;
+    ListView listProjView;
     private ArrayAdapter adapter;
+    private List<Projekt> lProjekty;
+    private List<Zadanie> lZadania;
+    private List<String> lProjektyNames;
+    AlertDialog.Builder alert;
+    String projekt;
 
 
     @Override
@@ -175,7 +183,7 @@ public class MainActivity extends AppCompatActivity
         } else if (idx == R.id.notatkiGrup) {
 
         } else if (idx == R.id.listyGrup) {
-
+            loadZadania();
         } else if (idx == R.id.plikiGrup) {
 
         }else if (idx == R.id.nav_share) {
@@ -283,7 +291,7 @@ public class MainActivity extends AppCompatActivity
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                lProjekt = new ArrayList<>();
+                lProjekty = new ArrayList<>();
                 for(DataSnapshot snapshot : dataSnapshot.child("projekty").getChildren()) {
                     for(DataSnapshot s : snapshot.child("osoby").getChildren()){
                         if (Objects.equals(s.getKey(), account.getId())){
@@ -292,16 +300,94 @@ public class MainActivity extends AppCompatActivity
                             projekt.setDaneTermZak(snapshot.child("dane").child("termzak").getValue(String.class));
                             projekt.setDaneTytul(snapshot.child("dane").child("tytul").getValue(String.class));
                             projekt.setUid(snapshot.getKey());
-                            lProjekt.add(projekt);
+                            lProjekty.add(projekt);
                         }
                     }
 
                 }
                 Intent intent = new Intent(MainActivity.this, ProjektActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("projekty", (ArrayList<? extends Parcelable>) lProjekt); //to debug change here list of exercises
+                bundle.putParcelableArrayList("projekty", (ArrayList<? extends Parcelable>) lProjekty); //to debug change here list of exercises
                 intent.putExtras(bundle);
                 startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void loadZadania(){
+        lProjektyNames = new ArrayList<>();
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                lProjekty = new ArrayList<>();
+                for(DataSnapshot snapshot : dataSnapshot.child("projekty").getChildren()) {
+                    for(DataSnapshot s : snapshot.child("osoby").getChildren()){
+                        if (Objects.equals(s.getKey(), account.getId())){
+                            Projekt projekt = new Projekt();
+                            projekt.setDaneTermRozp(snapshot.child("dane").child("termrozp").getValue(String.class));
+                            projekt.setDaneTermZak(snapshot.child("dane").child("termzak").getValue(String.class));
+                            projekt.setDaneTytul(snapshot.child("dane").child("tytul").getValue(String.class));
+                            projekt.setUid(snapshot.getKey());
+                            lProjekty.add(projekt);
+                        }
+                    }
+                }
+                alert = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.custom_dialog_zadania, null);
+                alert.setView(dialogView);
+                listProjView = dialogView.findViewById(R.id.itemsProjListView);
+                alert.setMessage("");
+                alert.setTitle("Wybierz projekt");
+
+                ArrayAdapter tempAdapter;
+                if (!(lProjekty != null && lProjekty.isEmpty())) {
+                    for (int i = 0; i <lProjekty.size(); i++){
+                        lProjektyNames.add(lProjekty.get(i).getDaneTytul());
+                    }
+                    tempAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.item, R.id.listItem, lProjektyNames);
+                    listProjView.setAdapter(tempAdapter);
+                }
+
+        listProjView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                lZadania = new ArrayList<>();
+                projekt = lProjekty.get(i).getUid();
+                myRef.child("projekty").child(lProjekty.get(i).getUid()).child("zadania").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            Zadanie zadanie = new Zadanie();
+                            zadanie.setUid(snapshot.getKey());
+                            zadanie.setTresc(snapshot.child("tresc").getValue().toString());
+                            zadanie.setOsoba(snapshot.child("osoba").getValue().toString());
+                            lZadania.add(zadanie);
+                        }
+                        Intent intent = new Intent(MainActivity.this, ZadanieActivity.class);
+                        Bundle bundle = new Bundle();
+//                        bundle.putParcelableArrayList("zadania", (ArrayList<? extends Parcelable>) lZadania);
+//                        bundle.putParcelableArrayList("projekt", (ArrayList<? extends Parcelable>) lZadania);
+                        bundle.putString("projekt", projekt);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+
+                alert.show();
             }
 
             @Override

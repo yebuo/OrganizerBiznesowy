@@ -221,7 +221,7 @@ public class ProjektActivity extends AppCompatActivity {
             }
         });
 
-        if (!(lProjekty != null && lProjekty.isEmpty())) {
+        if (!(lProjekty == null || lProjekty.isEmpty())) {
             for (int i = 0; i <lProjekty.size(); i++){
                 lProjektyNames.add(lProjekty.get(i).getDaneTytul());
             }
