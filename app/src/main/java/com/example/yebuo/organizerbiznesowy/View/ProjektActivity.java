@@ -1,7 +1,6 @@
 package com.example.yebuo.organizerbiznesowy.View;
 
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,43 +8,31 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.yebuo.organizerbiznesowy.Model.Projekt;
-import com.example.yebuo.organizerbiznesowy.Model.Resource;
-import com.example.yebuo.organizerbiznesowy.Model.User;
 import com.example.yebuo.organizerbiznesowy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,6 +61,8 @@ public class ProjektActivity extends AppCompatActivity {
     TextView filenameTextView;
     EditText editTextNazwa;
     EditText editTextTermin;
+    EditText editTextUserEmail;
+    EditText editTextUserRole;
 
 
     @Override
@@ -90,8 +79,52 @@ public class ProjektActivity extends AppCompatActivity {
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()){
             case R.id.addUser:
+                LayoutInflater inflaterAdd = ProjektActivity.this.getLayoutInflater();
+                final View dialogViewAdd = inflaterAdd.inflate(R.layout.custom_dialog_projekt_user, null);
+                alert.setView(dialogViewAdd);
+                editTextUserEmail = dialogViewAdd.findViewById(R.id.editUserEmail);
+                editTextUserRole = dialogViewAdd.findViewById(R.id.editUserRole);
 
-                finish();
+
+                alert.setMessage("");
+                alert.setTitle("Edytuj projekt");
+
+
+                alert.setPositiveButton("Anuluj", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+
+                alert.setNegativeButton("Zapisz", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dRef.child("osoby").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    if (snapshot.child("dane").child("email").getValue().toString().toLowerCase().equals(editTextUserEmail.getText().toString().toLowerCase())){
+//                                        String key = dRef.child("projekty").child(lProjekty.get(info.position).getUid()).child("osoby").push().getKey();
+                                        DatabaseReference tempRef = dRef.child("projekty").child(lProjekty.get(info.position).getUid()).child("osoby").child(snapshot.getKey());
+                                        tempRef.child("osoba").setValue(snapshot.getKey());
+//                                        przenosi cały node usera
+//                                        tempRef.child("osoba").setValue(snapshot.getValue());
+                                        tempRef.child("rola").setValue(editTextUserRole.getText().toString());
+                                        tempRef.child("email").setValue(editTextUserEmail.getText().toString().toLowerCase());
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                        finish();
+                    }
+                });
+
+                alert.show();
+
+
                 return true;
             case R.id.editProjekt:
                 LayoutInflater inflater = ProjektActivity.this.getLayoutInflater();
