@@ -141,8 +141,8 @@ public class NotatkiActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Wprowadź wartości", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
                 LayoutInflater inflater = NotatkiActivity.this.getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.custom_dialog, null);
                 alert.setView(dialogView);
@@ -173,13 +173,6 @@ public class NotatkiActivity extends AppCompatActivity {
                 alert.show();
             }
         });
-
-//        lResourcesNames.add("x");
-//        lResourcesNames.add("y");
-//        lResourcesNames.add("x");
-//
-//        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
-//        listView.setAdapter(adapter);
 
         if (!(lResources != null && lResources.isEmpty())) {
             for (int i = 0; i <lResources.size(); i++){
@@ -220,8 +213,6 @@ public class NotatkiActivity extends AppCompatActivity {
                 });
 
                 alert.show();
-
-                Toast.makeText(getApplicationContext(), dRef.child("osoby").child(account.getId()).child("zasoby").child("notatki").child("url").toString(), Toast.LENGTH_LONG).show();
             }
         });
     }

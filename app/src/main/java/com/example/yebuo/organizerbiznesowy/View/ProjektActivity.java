@@ -124,7 +124,6 @@ public class ProjektActivity extends AppCompatActivity {
 
                 alert.setNegativeButton("Zapisz", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-//                        String key = String.valueOf(dRef.child("projekty").child(lProjekty.get(listView.getSelectedItemPosition()).getUid()));
                         String key = String.valueOf(dRef.child("projekty").child(lProjekty.get(info.position).getUid()).getKey());
                         DatabaseReference tempRef = dRef.child("projekty").child(key).child("dane");
                         tempRef.child("tytul").setValue(editTextNazwa.getText().toString());
@@ -154,21 +153,11 @@ public class ProjektActivity extends AppCompatActivity {
         listView = findViewById(R.id.itemsListView);
         lProjekty = getIntent().getExtras().getParcelableArrayList("projekty");
 
-//        Button buttonFileExplorer = findViewById(R.id.buttonSearchFile);
-//        buttonFileExplorer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                fileView(view);
-//            }
-//        });
-
         FloatingActionButton fab = findViewById(R.id.fab);
         alert = new AlertDialog.Builder(this);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 LayoutInflater inflater = ProjektActivity.this.getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.custom_dialog_projekt, null);
                 alert.setView(dialogView);
@@ -257,38 +246,4 @@ public class ProjektActivity extends AppCompatActivity {
         }
         return result;
     }
-
-//    public String getFileExt(Uri uri){
-//        ContentResolver contentResolver = getContentResolver();
-//        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-//        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
-//    }
-
-//    public void uploadFile(View v){
-//        if (uri != null){
-//            StorageReference sRef = this.sRef.child("files").child(account.getId()).child(getFileName(uri));
-//            sRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    Toast.makeText(getApplicationContext(), "Wysłano", Toast.LENGTH_SHORT).show();
-//                    String key = dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").push().getKey();
-//                    DatabaseReference tempRef = dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").child(key);
-//                    dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").push().setValue(new Resource(getFileName(uri), taskSnapshot.getDownloadUrl().toString()));
-//                }
-//            })
-//            .addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//
-//                    Toast.makeText(getApplicationContext(), "Niepowodzenie", Toast.LENGTH_SHORT).show();
-//                }
-//            })
-//            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-//
-//                }
-//            });
-//        }
-//    }
 }

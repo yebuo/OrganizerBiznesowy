@@ -18,7 +18,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -36,8 +39,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -76,6 +82,26 @@ public class PlikiActivity extends AppCompatActivity {
 
     File file = null;
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if(v.getId() == R.id.itemsListView){
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_list_pliki, menu);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()){
+            case R.id.deletePlik:
+                dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").child(lResources.get(info.position).getUid()).removeValue();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,8 +127,6 @@ public class PlikiActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 LayoutInflater inflater = PlikiActivity.this.getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.custom_dialog_pliki, null);
                 alert.setView(dialogView);
@@ -151,6 +175,8 @@ public class PlikiActivity extends AppCompatActivity {
             listView.setAdapter(adapter);
         }
 
+        registerForContextMenu(listView);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -158,8 +184,8 @@ public class PlikiActivity extends AppCompatActivity {
                     file = File.createTempFile("image"+ System.currentTimeMillis(), "jpg");
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                sRef.child("files").child(account.getId()).child((String)adapterView.getItemAtPosition(i)).getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                }sRef.child("files").child(account.getId()).child((String)adapterView.getItemAtPosition(i))
+                .getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                         ImageView img = findViewById(R.id.mainImageView);
