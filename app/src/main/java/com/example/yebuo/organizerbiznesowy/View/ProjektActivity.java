@@ -102,8 +102,10 @@ public class ProjektActivity extends AppCompatActivity {
                 dRef.child("projekty").child(lProjekty.get(info.position).getUid()).child("dane").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        editTextNazwa.setText(dataSnapshot.child("tytul").getValue().toString());
-                        editTextTermin.setText(dataSnapshot.child("termzak").getValue().toString());
+                        if (dataSnapshot.getValue() != null) {
+                            editTextNazwa.setText(dataSnapshot.child("tytul").getValue().toString());
+                            editTextTermin.setText(dataSnapshot.child("termzak").getValue().toString());
+                        }
                     }
 
                     @Override
@@ -256,35 +258,37 @@ public class ProjektActivity extends AppCompatActivity {
         return result;
     }
 
-    public String getFileExt(Uri uri){
-        ContentResolver contentResolver = getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
-    }
+//    public String getFileExt(Uri uri){
+//        ContentResolver contentResolver = getContentResolver();
+//        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+//        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+//    }
 
-    public void uploadFile(View v){
-        if (uri != null){
-            StorageReference sRef = this.sRef.child("files").child(account.getId()).child(getFileName(uri));
-            sRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(getApplicationContext(), "Wysłano", Toast.LENGTH_SHORT).show();
-                    dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").push().setValue(new Resource(getFileName(uri), taskSnapshot.getDownloadUrl().toString()));
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-
-                    Toast.makeText(getApplicationContext(), "Niepowodzenie", Toast.LENGTH_SHORT).show();
-                }
-            })
-            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
-                }
-            });
-        }
-    }
+//    public void uploadFile(View v){
+//        if (uri != null){
+//            StorageReference sRef = this.sRef.child("files").child(account.getId()).child(getFileName(uri));
+//            sRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    Toast.makeText(getApplicationContext(), "Wysłano", Toast.LENGTH_SHORT).show();
+//                    String key = dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").push().getKey();
+//                    DatabaseReference tempRef = dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").child(key);
+//                    dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").push().setValue(new Resource(getFileName(uri), taskSnapshot.getDownloadUrl().toString()));
+//                }
+//            })
+//            .addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//
+//                    Toast.makeText(getApplicationContext(), "Niepowodzenie", Toast.LENGTH_SHORT).show();
+//                }
+//            })
+//            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+//
+//                }
+//            });
+//        }
+//    }
 }

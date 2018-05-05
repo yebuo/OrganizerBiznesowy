@@ -247,7 +247,9 @@ public class PlikiActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(getApplicationContext(), "Wysłano", Toast.LENGTH_SHORT).show();
-                    dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").push().setValue(new Resource(getFileName(uri), taskSnapshot.getDownloadUrl().toString()));
+                    String key = dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").push().getKey();
+                    DatabaseReference tempRef = dRef.child("osoby").child(account.getId()).child("zasoby").child("pliki").child(key);
+                    tempRef.setValue(new Resource(getFileName(uri), taskSnapshot.getDownloadUrl().toString(),key));
                 }
             })
             .addOnFailureListener(new OnFailureListener() {

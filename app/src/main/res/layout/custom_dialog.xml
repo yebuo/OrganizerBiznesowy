@@ -11,11 +11,25 @@
         android:layout_height="wrap_content"
         android:inputType="text" />
 
+    <TextView
+        android:id="@+id/showNazwa"
+        android:hint="Nazwa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <EditText
         android:id="@+id/editTresc"
         android:hint="Treść"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text" />
+        android:inputType="textMultiLine" />
+
+    <TextView
+        android:id="@+id/showTresc"
+        android:hint="Treść"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="5"
+        android:scrollbars = "vertical"/>
 
 </LinearLayout>

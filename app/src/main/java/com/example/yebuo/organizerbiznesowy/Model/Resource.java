@@ -11,14 +11,20 @@ public class Resource implements Parcelable{
 
     String nazwa;
     String url;
+    String uid;
+
+    public String getUid() {
+        return uid;
+    }
 
     public Resource(){
 
     }
 
-    public Resource(String nazwa, String url){
+    public Resource(String nazwa, String url, String uid){
         this.nazwa = nazwa;
         this.url = url;
+        this.uid = uid;
     }
 
     public static final Creator<Resource> CREATOR = new Creator<Resource>() {
@@ -36,6 +42,7 @@ public class Resource implements Parcelable{
     private Resource(Parcel in) {
         nazwa = in.readString();
         url = in.readString();
+        uid = in.readString();
     }
 
     public String getNazwa() {
@@ -55,5 +62,6 @@ public class Resource implements Parcelable{
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(nazwa);
         parcel.writeString(url);
+        parcel.writeString(uid);
     }
 }
