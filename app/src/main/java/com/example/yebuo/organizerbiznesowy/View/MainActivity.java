@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         } else if (idx == R.id.grupy) {
             loadProjekt();
         } else if (idx == R.id.notatkiGrup) {
-
+            loadNotatkiGrup();
         } else if (idx == R.id.listyGrup) {
             loadZadania();
         } else if (idx == R.id.plikiGrup) {
@@ -354,37 +354,115 @@ public class MainActivity extends AppCompatActivity
                     listProjView.setAdapter(tempAdapter);
                 }
 
-        listProjView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                lZadania = new ArrayList<>();
-                projekt = lProjekty.get(i).getUid();
-                myRef.child("projekty").child(lProjekty.get(i).getUid()).child("zadania").addValueEventListener(new ValueEventListener() {
+                listProjView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                            Zadanie zadanie = new Zadanie();
-                            zadanie.setUid(snapshot.getKey());
-                            zadanie.setTresc(snapshot.child("tresc").getValue().toString());
-                            zadanie.setOsoba(snapshot.child("osoba").getValue().toString());
-                            lZadania.add(zadanie);
-                        }
-                        Intent intent = new Intent(MainActivity.this, ZadanieActivity.class);
-                        Bundle bundle = new Bundle();
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        lZadania = new ArrayList<>();
+                        projekt = lProjekty.get(i).getUid();
+                        myRef.child("projekty").child(lProjekty.get(i).getUid()).child("zadania").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                    Zadanie zadanie = new Zadanie();
+                                    zadanie.setUid(snapshot.getKey());
+                                    zadanie.setTresc(snapshot.child("tresc").getValue().toString());
+                                    zadanie.setOsoba(snapshot.child("osoba").getValue().toString());
+                                    lZadania.add(zadanie);
+                                }
+                                Intent intent = new Intent(MainActivity.this, ZadanieActivity.class);
+                                Bundle bundle = new Bundle();
 //                        bundle.putParcelableArrayList("zadania", (ArrayList<? extends Parcelable>) lZadania);
 //                        bundle.putParcelableArrayList("projekt", (ArrayList<? extends Parcelable>) lZadania);
-                        bundle.putString("projekt", projekt);
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                    }
+                                bundle.putString("projekt", projekt);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
+                            }
+                        });
                     }
                 });
+
+
+                alert.show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
+    }
+
+    public void loadNotatkiGrup(){
+        lProjektyNames = new ArrayList<>();
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                lProjekty = new ArrayList<>();
+                for(DataSnapshot snapshot : dataSnapshot.child("projekty").getChildren()) {
+                    for(DataSnapshot s : snapshot.child("osoby").getChildren()){
+                        if (Objects.equals(s.getKey(), account.getId())){
+                            Projekt projekt = new Projekt();
+                            projekt.setDaneTermRozp(snapshot.child("dane").child("termrozp").getValue(String.class));
+                            projekt.setDaneTermZak(snapshot.child("dane").child("termzak").getValue(String.class));
+                            projekt.setDaneTytul(snapshot.child("dane").child("tytul").getValue(String.class));
+                            projekt.setUid(snapshot.getKey());
+                            lProjekty.add(projekt);
+                        }
+                    }
+                }
+                alert = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.custom_dialog_zadania, null);
+                alert.setView(dialogView);
+                listProjView = dialogView.findViewById(R.id.itemsProjListView);
+                alert.setMessage("");
+                alert.setTitle("Wybierz projekt");
+
+                ArrayAdapter tempAdapter;
+                if (!(lProjekty != null && lProjekty.isEmpty())) {
+                    for (int i = 0; i <lProjekty.size(); i++){
+                        lProjektyNames.add(lProjekty.get(i).getDaneTytul());
+                    }
+                    tempAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.item, R.id.listItem, lProjektyNames);
+                    listProjView.setAdapter(tempAdapter);
+                }
+
+                listProjView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        lResources = new ArrayList<>();
+                        projekt = lProjekty.get(i).getUid();
+                        myRef.child("projekty").child(lProjekty.get(i).getUid()).child("zasoby").child("notatki").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                    Resource resource = new Resource();
+                                    resource.setUid(snapshot.getKey());
+                                    resource.setUrl(snapshot.child("url").getValue().toString());
+                                    resource.setNazwa(snapshot.child("nazwa").getValue().toString());
+                                    lResources.add(resource);
+                                }
+                                Intent intent = new Intent(MainActivity.this, NotatkiActivityGroup.class);
+                                Bundle bundle = new Bundle();
+//                        bundle.putParcelableArrayList("zadania", (ArrayList<? extends Parcelable>) lZadania);
+//                        bundle.putParcelableArrayList("projekt", (ArrayList<? extends Parcelable>) lZadania);
+                                bundle.putString("projekt", projekt);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                });
 
 
                 alert.show();

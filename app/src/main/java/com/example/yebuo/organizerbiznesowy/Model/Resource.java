@@ -45,6 +45,18 @@ public class Resource implements Parcelable{
         uid = in.readString();
     }
 
+    public void setNazwa(String nazwa) {
+        this.nazwa = nazwa;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     public String getNazwa() {
         return nazwa;
     }

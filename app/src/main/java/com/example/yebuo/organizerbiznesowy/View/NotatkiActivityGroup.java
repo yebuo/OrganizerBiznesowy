@@ -2,10 +2,7 @@ package com.example.yebuo.organizerbiznesowy.View;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -36,17 +33,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Yebuo on 02.05.2018.
  */
 
-public class ZadanieActivity extends AppCompatActivity {
+public class NotatkiActivityGroup extends AppCompatActivity {
 
     private ArrayAdapter adapter;
     AlertDialog.Builder alert;
@@ -56,16 +50,14 @@ public class ZadanieActivity extends AppCompatActivity {
     StorageReference sRef = storage.getReference();
     GoogleSignInAccount account;
 
-    private List<Zadanie> lZadania;
-    private List<String> lZadaniaNames;
+    private List<Resource> lResources;
+    private List<String> lResourcesNames;
     ListView listView;
     EditText editTextNazwa;
     EditText editTextTresc;
     TextView textViewNazwa;
     TextView textViewTresc;
     private String projekt;
-    String osoba;
-    int listViewCounter = 0;
 
 
     @Override
@@ -73,7 +65,7 @@ public class ZadanieActivity extends AppCompatActivity {
         super.onCreateContextMenu(menu, v, menuInfo);
         if(v.getId() == R.id.itemsListView){
             MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.menu_list_zadanie, menu);
+            inflater.inflate(R.menu.menu_list_notatki, menu);
         }
     }
 
@@ -81,18 +73,18 @@ public class ZadanieActivity extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()){
-            case R.id.editZadanie:
-                LayoutInflater inflater = ZadanieActivity.this.getLayoutInflater();
+            case R.id.editNotatka:
+                LayoutInflater inflater = NotatkiActivityGroup.this.getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.custom_dialog, null);
                 alert.setView(dialogView);
                 editTextNazwa = dialogView.findViewById(R.id.editNazwa);
                 editTextTresc = dialogView.findViewById(R.id.editTresc);
-                dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).addValueEventListener(new ValueEventListener() {
+                dRef.child("projekty").child(projekt).child("zasoby").child("notatki").child(lResources.get(info.position).getUid()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.getValue() != null) {
-                            editTextNazwa.setText(dataSnapshot.child("osobaEmail").getValue().toString());
-                            editTextTresc.setText(dataSnapshot.child("tresc").getValue().toString());
+                            editTextNazwa.setText(dataSnapshot.child("nazwa").getValue().toString());
+                            editTextTresc.setText(dataSnapshot.child("url").getValue().toString());
                         }
                     }
 
@@ -102,7 +94,7 @@ public class ZadanieActivity extends AppCompatActivity {
                     }
                 });
                 alert.setMessage("");
-                alert.setTitle("Edytuj zadanie");
+                alert.setTitle("Edytuj notatkę");
 
 
                 alert.setPositiveButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -113,41 +105,18 @@ public class ZadanieActivity extends AppCompatActivity {
                 alert.setNegativeButton("Zapisz", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
 //                        String key = String.valueOf(dRef.child("projekty").child(lProjekty.get(listView.getSelectedItemPosition()).getUid()));
-                        String key = String.valueOf(dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).getKey());
-                        DatabaseReference tempRef = dRef.child("projekty").child(projekt).child("zadania").child(key);
-                        tempRef.child("osobaEmail").setValue(editTextNazwa.getText().toString());
-                        tempRef.child("tresc").setValue(editTextTresc.getText().toString());
+                        String key = String.valueOf(dRef.child("projekty").child(projekt).child("zasoby").child("notatki").child(lResources.get(info.position).getUid()).getKey());
+                        DatabaseReference tempRef = dRef.child("projekty").child(projekt).child("zasoby").child("notatki").child(key);
+                        tempRef.child("nazwa").setValue(editTextNazwa.getText().toString());
+                        tempRef.child("url").setValue(editTextTresc.getText().toString());
                         finish();
                     }
                 });
 
                 alert.show();
                 return true;
-            case R.id.deleteZadanie:
-                dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).removeValue();
-                return true;
-            case R.id.zmienStan:
-                dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).child("stan").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String stan =  dataSnapshot.getValue().toString();
-                        if (Objects.equals(stan, "0")) {
-                            dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).child("stan").setValue(1);
-//                            listView.getChildAt(info.position).setBackgroundColor(Color.GREEN);
-                            finish();
-                        }
-                        else if (Objects.equals(stan, "1")) {
-                            dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(info.position).getUid()).child("stan").setValue(0);
-//                            listView.getChildAt(info.position).setBackgroundColor(Color.RED);
-                            finish();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
+            case R.id.deleteNotatka:
+                dRef.child("projekty").child(projekt).child("zasoby").child("notatki").child(lResources.get(info.position).getUid()).removeValue();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -160,10 +129,9 @@ public class ZadanieActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notatki);
         account = GoogleSignIn.getLastSignedInAccount(this);
 
-        lZadania = new ArrayList<>();
-        lZadaniaNames = new ArrayList<>();
+        lResources = new ArrayList<>();
+        lResourcesNames = new ArrayList<>();
         listView = findViewById(R.id.itemsListView);
-//        lZadania = getIntent().getExtras().getParcelableArrayList("zadania");
         projekt = getIntent().getExtras().getString("projekt");
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -173,7 +141,7 @@ public class ZadanieActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                Snackbar.make(view, "Wprowadź wartości", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                LayoutInflater inflater = ZadanieActivity.this.getLayoutInflater();
+                LayoutInflater inflater = NotatkiActivityGroup.this.getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.custom_dialog, null);
                 alert.setView(dialogView);
                 editTextNazwa = dialogView.findViewById(R.id.editNazwa);
@@ -183,7 +151,7 @@ public class ZadanieActivity extends AppCompatActivity {
                 textViewNazwa.setVisibility(View.INVISIBLE);
                 textViewTresc.setVisibility(View.INVISIBLE);
                 alert.setMessage("");
-                alert.setTitle("Nowe zadanie");
+                alert.setTitle("Nowa notatka");
 
 
                 alert.setPositiveButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -193,32 +161,10 @@ public class ZadanieActivity extends AppCompatActivity {
 
                 alert.setNegativeButton("Zapisz", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        dRef.child("osoby").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                    if (snapshot.child("dane").child("email").getValue().toString().toLowerCase().equals(editTextNazwa.getText().toString().toLowerCase())){
-                                        osoba = snapshot.getKey();
-                                    }
-                                }
-                                String key = dRef.child("projekty").child(projekt).child("zadania").push().getKey();
-                                DatabaseReference tempRef = dRef.child("projekty").child(projekt).child("zadania").child(key);
-                                Zadanie zadanie = new Zadanie();
-                                zadanie.setOsoba(osoba);
-                                zadanie.setOsobaEmail(editTextNazwa.getText().toString().toLowerCase());
-                                zadanie.setUid(key);
-                                zadanie.setStan("0");
-                                zadanie.setTresc(editTextTresc.getText().toString());
-                                tempRef.setValue(zadanie);
-                                finish();
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-
+                        String key = dRef.child("projekty").child(projekt).child("zasoby").child("notatki").push().getKey();
+                        DatabaseReference tempRef = dRef.child("projekty").child(projekt).child("zasoby").child("notatki").child(key);
+                        tempRef.setValue(new Resource(editTextNazwa.getText().toString(), editTextTresc.getText().toString(), key));
+                        finish();
                     }
                 });
 
@@ -226,23 +172,31 @@ public class ZadanieActivity extends AppCompatActivity {
             }
         });
 
-        dRef.child("projekty").child(projekt).child("zadania").addValueEventListener(new ValueEventListener() {
+//        if (!(lResources == null || lResources.isEmpty())) {
+//            for (int i = 0; i <lResources.size(); i++){
+//                lResourcesNames.add(lResources.get(i).getNazwa());
+//            }
+//            adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
+//            listView.setAdapter(adapter);
+//        }
+
+        dRef.child("projekty").child(projekt).child("zasoby").child("notatki").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Zadanie zadanie = new Zadanie();
-                    zadanie.setUid(snapshot.getKey());
-                    zadanie.setTresc(snapshot.child("tresc").getValue().toString());
-                    zadanie.setOsoba(snapshot.child("osoba").getValue().toString());
-                    zadanie.setOsobaEmail(snapshot.child("osobaEmail").getValue().toString());
-                    zadanie.setStan(snapshot.child("stan").getValue().toString());
-                    lZadania.add(zadanie);
+                    Resource resource = new Resource();
+                    resource.setUid(snapshot.getKey());
+                    resource.setUrl(snapshot.child("url").getValue().toString());
+                    resource.setNazwa(snapshot.child("nazwa").getValue().toString());
+//                    resource.setOsobaEmail(snapshot.child("osobaEmail").getValue().toString());
+//                    resource.setStan(snapshot.child("stan").getValue().toString());
+                    lResources.add(resource);
                 }
-                if (!(lZadania == null || lZadania.isEmpty())) {
-                    for (int i = 0; i < lZadania.size(); i++){
-                        lZadaniaNames.add(lZadania.get(i).getUid());
+                if (!(lResources == null || lResources.isEmpty())) {
+                    for (int i = 0; i < lResources.size(); i++){
+                        lResourcesNames.add(lResources.get(i).getNazwa());
                     }
-                    adapter = new ArrayAdapter<String>(ZadanieActivity.this, R.layout.item, R.id.listItem, lZadaniaNames){
+                    adapter = new ArrayAdapter<String>(NotatkiActivityGroup.this, R.layout.item, R.id.listItem, lResourcesNames){
                         @NonNull
                         @Override
                         public View getView(int position, View convertView, ViewGroup parent) {
@@ -265,13 +219,12 @@ public class ZadanieActivity extends AppCompatActivity {
         });
 
 
-
         registerForContextMenu(listView);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                LayoutInflater inflater = ZadanieActivity.this.getLayoutInflater();
+                LayoutInflater inflater = NotatkiActivityGroup.this.getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.custom_dialog, null);
                 alert.setView(dialogView);
                 textViewNazwa = dialogView.findViewById(R.id.showNazwa);
@@ -281,13 +234,12 @@ public class ZadanieActivity extends AppCompatActivity {
                 editTextNazwa.setVisibility(View.INVISIBLE);
                 editTextTresc.setVisibility(View.INVISIBLE);
                 textViewTresc.setMovementMethod(new ScrollingMovementMethod());
-                koloruj();
-                dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(i).getUid()).addValueEventListener(new ValueEventListener() {
+                dRef.child("projekty").child(projekt).child("zasoby").child("notatki").child(lResources.get(i).getUid()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.getValue() != null) {
-                            textViewNazwa.setText(dataSnapshot.child("osobaEmail").getValue().toString());
-                            textViewTresc.setText(dataSnapshot.child("tresc").getValue().toString());
+                            textViewNazwa.setText(dataSnapshot.child("nazwa").getValue().toString());
+                            textViewTresc.setText(dataSnapshot.child("url").getValue().toString());
                         }
                     }
 
@@ -300,8 +252,6 @@ public class ZadanieActivity extends AppCompatActivity {
                 alert.show();
             }
         });
-
-
     }
 
     @Override
@@ -310,15 +260,5 @@ public class ZadanieActivity extends AppCompatActivity {
         finish();
     }
 
-    public void koloruj(){
-        for (listViewCounter = 0; listViewCounter < listView.getCount(); listViewCounter++){
-            if (lZadania.get(listViewCounter).getStan() == "0")
-                listView.getChildAt(listViewCounter).setBackgroundColor(Color.RED);
-            if (lZadania.get(listViewCounter).getStan() == "1")
-                listView.getChildAt(listViewCounter).setBackgroundColor(Color.GREEN);
-//            if (lZadania.get(listViewCounter).getStan() == "2")
-//                listView.getChildAt(listViewCounter).setBackgroundColor(Color.GREEN);
-        }
-        listViewCounter = 0;
-    }
+
 }
