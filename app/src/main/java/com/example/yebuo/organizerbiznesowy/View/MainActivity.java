@@ -1,13 +1,23 @@
 package com.example.yebuo.organizerbiznesowy.View;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,6 +56,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -112,6 +124,32 @@ public class MainActivity extends AppCompatActivity
 //                alert.show();
 //            }
 //        });
+
+//        Button btnCreateNotification = (Button) findViewById(R.id.btnCreateNotification);
+//        btnCreateNotification.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                createNotification();
+//            }
+//        });
+
+
+            Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.HOUR_OF_DAY, 20);
+            calendar.set(Calendar.MINUTE, 00);
+            calendar.set(Calendar.SECOND, 00);
+
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
+
+
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -225,8 +263,8 @@ public class MainActivity extends AppCompatActivity
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 User user = dataSnapshot.child("osoby").child("O1").child("dane").getValue(User.class);
-                TextView textView = findViewById(R.id.mainTextView);
-                textView.setText(user.getTelefon());
+                //TextView textView = findViewById(R.id.mainTextView);
+                //textView.setText(user.getTelefon());
             }
 
             @Override
@@ -474,4 +512,27 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+//    private void createNotification() {
+//
+//        Intent intent = new Intent(this, MainActivity.class);
+//        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+//
+//        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_menu_grup);
+//
+//        Notification noti = new NotificationCompat.Builder(this)
+//                .setContentTitle("Nowa wiadomość")
+//                .setContentText("Temat wiadomości")
+//                .setTicker("Masz wiadomość")
+//                .setSmallIcon(android.R.drawable.ic_dialog_info)
+//                .setLargeIcon(icon)
+//                .setAutoCancel(true)
+//                .setContentIntent(pIntent)
+//                .build();
+//
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//
+//        notificationManager.notify(0, noti);
+//    }
 }
