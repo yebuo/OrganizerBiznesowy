@@ -172,13 +172,7 @@ public class NotatkiActivityGroup extends AppCompatActivity {
             }
         });
 
-//        if (!(lResources == null || lResources.isEmpty())) {
-//            for (int i = 0; i <lResources.size(); i++){
-//                lResourcesNames.add(lResources.get(i).getNazwa());
-//            }
-//            adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
-//            listView.setAdapter(adapter);
-//        }
+
 
         dRef.child("projekty").child(projekt).child("zasoby").child("notatki").addValueEventListener(new ValueEventListener() {
             @Override

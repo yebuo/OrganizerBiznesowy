@@ -281,7 +281,7 @@ public class ZadanieActivity extends AppCompatActivity {
                 editTextNazwa.setVisibility(View.INVISIBLE);
                 editTextTresc.setVisibility(View.INVISIBLE);
                 textViewTresc.setMovementMethod(new ScrollingMovementMethod());
-                koloruj();
+                //koloruj();
                 dRef.child("projekty").child(projekt).child("zadania").child(lZadania.get(i).getUid()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

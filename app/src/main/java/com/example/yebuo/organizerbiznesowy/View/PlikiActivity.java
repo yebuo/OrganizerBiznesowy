@@ -114,13 +114,6 @@ public class PlikiActivity extends AppCompatActivity {
         listView = findViewById(R.id.itemsListView);
         lResources = getIntent().getExtras().getParcelableArrayList("pliki");
 
-//        Button buttonFileExplorer = findViewById(R.id.buttonSearchFile);
-//        buttonFileExplorer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                fileView(view);
-//            }
-//        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         alert = new AlertDialog.Builder(this);
@@ -160,12 +153,6 @@ public class PlikiActivity extends AppCompatActivity {
             }
         });
 
-//        lResourcesNames.add("x");
-//        lResourcesNames.add("y");
-//        lResourcesNames.add("x");
-//
-//        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResourcesNames);
-//        listView.setAdapter(adapter);
 
         if (!(lResources != null && lResources.isEmpty())) {
             for (int i = 0; i <lResources.size(); i++){
@@ -201,14 +188,7 @@ public class PlikiActivity extends AppCompatActivity {
                         }
                     }
                 });
-                // getDownloadUrl().toString()
-                //Uri tempStor = sRef.child("files").child(account.getId()).child(adapterView.getItemAtPosition(i).toString()).getDownloadUrl();
-//                tempStor.getFile() .addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri uri) {
-//
-//                    }
-//                });
+
             }
         });
     }

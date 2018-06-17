@@ -93,46 +93,6 @@ public class MainActivity extends AppCompatActivity
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        alert = new AlertDialog.Builder(this);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//                final EditText edittext = new EditText(MainActivity.this);
-//                alert.setMessage("Enter Your Message");
-//                alert.setTitle("Enter Your Title");
-//
-//                alert.setView(edittext);
-//
-//                alert.setPositiveButton("Yes Option", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int whichButton) {
-//                        //What ever you want to do with the value
-//                        //Editable YouEditTextValue = edittext.getText();
-//                        //OR
-//                        //String YouEditTextValue = edittext.getText().toString();
-//                    }
-//                });
-//
-//                alert.setNegativeButton("No Option", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int whichButton) {
-//                        // what ever you want to do with No option.
-//                    }
-//                });
-//
-//                alert.show();
-//            }
-//        });
-
-//        Button btnCreateNotification = (Button) findViewById(R.id.btnCreateNotification);
-//        btnCreateNotification.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                createNotification();
-//            }
-//        });
 
 
             Intent alarmIntent = new Intent(this, AlarmReceiver.class);
@@ -162,14 +122,7 @@ public class MainActivity extends AppCompatActivity
         updateUI(account);
 
         lResources = new ArrayList<>();
-//
-//        lResources.add("a");
-//        lResources.add("b");
-//        lResources.add("c");
-//
-//
-//        adapter = new ArrayAdapter<>(this, R.layout.item, R.id.listItem, lResources);
-//        listView.setAdapter(adapter);
+
     }
 
     @Override
@@ -263,8 +216,6 @@ public class MainActivity extends AppCompatActivity
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 User user = dataSnapshot.child("osoby").child("O1").child("dane").getValue(User.class);
-                //TextView textView = findViewById(R.id.mainTextView);
-                //textView.setText(user.getTelefon());
             }
 
             @Override
@@ -288,7 +239,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 Intent intent = new Intent(MainActivity.this, NotatkiActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("notatki", (ArrayList<? extends Parcelable>) lResources); //to debug change here list of exercises
+                bundle.putParcelableArrayList("notatki", (ArrayList<? extends Parcelable>) lResources); //to debug change here list of resources
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -313,7 +264,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 Intent intent = new Intent(MainActivity.this, PlikiActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("pliki", (ArrayList<? extends Parcelable>) lResources); //to debug change here list of exercises
+                bundle.putParcelableArrayList("pliki", (ArrayList<? extends Parcelable>) lResources); //to debug change here list of resources
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -345,7 +296,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 Intent intent = new Intent(MainActivity.this, ProjektActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("projekty", (ArrayList<? extends Parcelable>) lProjekty); //to debug change here list of exercises
+                bundle.putParcelableArrayList("projekty", (ArrayList<? extends Parcelable>) lProjekty);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -512,27 +463,4 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
-//    private void createNotification() {
-//
-//        Intent intent = new Intent(this, MainActivity.class);
-//        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
-//
-//        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_menu_grup);
-//
-//        Notification noti = new NotificationCompat.Builder(this)
-//                .setContentTitle("Nowa wiadomość")
-//                .setContentText("Temat wiadomości")
-//                .setTicker("Masz wiadomość")
-//                .setSmallIcon(android.R.drawable.ic_dialog_info)
-//                .setLargeIcon(icon)
-//                .setAutoCancel(true)
-//                .setContentIntent(pIntent)
-//                .build();
-//
-//        NotificationManager notificationManager =
-//                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//
-//        notificationManager.notify(0, noti);
-//    }
 }
